@@ -18,22 +18,28 @@ def get_redis():
 
 @app.route("/", methods=['POST','GET'])
 def hello():
+    voter_id = request.cookies.get('voter_id')
+    if not voter_id:
+        voter_id = hex(random.getrandbits(64))[2:-1]
+
+    vote = None
+
     if request.method == 'POST':
-        review = {
-            'movie_title': request.form['movie_title'],
-            'reviewer_name': request.form['reviewer_name'],
-            'review_text': request.form['review_text'],
-            'rating': request.form['rating']
-        }
         redis = get_redis()
-        redis.rpush('reviews', json.dumps(review))
+        vote = request.form['vote']
+        data = json.dumps({'voter_id': voter_id, 'vote': vote})
+        redis.rpush('votes', data)
 
-    # Fetch recent reviews
-    reviews = get_recent_reviews()
-    
-    return render_template('index.html', reviews=reviews)
+    resp = make_response(render_template(
+        'index.html',
+        option_a=option_a,
+        option_b=option_b,
+        hostname=hostname,
+        vote=vote,
+    ))
+    resp.set_cookie('voter_id', voter_id)
+    return resp
 
-def get_recent_reviews():
-    redis = get_redis()
-    reviews = redis.lrange('reviews', 0, 9)  # Get last 10 reviews
-    return [json.loads(review) for review in reviews]
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=80, debug=True, threaded=True)

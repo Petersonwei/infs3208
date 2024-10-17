@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -13,26 +13,149 @@
   <body>
     <div id="content-container">
       <div id="content-container-center">
-        <h3>Submit a Movie Review</h3>
-        <form id="review-form" method="POST" action="/">
-          <input type="text" name="movie_title" placeholder="Movie Title" required>
-          <input type="text" name="reviewer_name" placeholder="Your Name" required>
-          <textarea name="review_text" placeholder="Your Review" required></textarea>
-          <select name="rating" required>
-            <option value="">Select Rating</option>
-            <option value="1">1 Star</option>
-            <option value="2">2 Stars</option>
-            <option value="3">3 Stars</option>
-            <option value="4">4 Stars</option>
-            <option value="5">5 Stars</option>
-          </select>
-          <button type="submit">Submit Review</button>
+        <h3>{{option_a}} vs {{option_b}}!</h3>
+        <form id="choice" name='form' method="POST" action="/">
+          <button id="a" type="submit" name="vote" class="a" value="a">{{option_a}}</button>
+          <button id="b" type="submit" name="vote" class="b" value="b">{{option_b}}</button>
         </form>
-        <div id="recent-reviews">
-          <!-- Display recent reviews here -->
+        <div id="tip">
+          (Tip: you can change your vote)
+        </div>
+        <div id="hostname">
+          Processed by container ID {{hostname}}
         </div>
       </div>
     </div>
-    <!-- ... scripts ... -->
+    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    {% if vote %}
+    <script>
+      var vote = "{{vote}}";
+
+      if(vote == "a"){
+        $(".a").prop('disabled', true);
+        $(".a").html('{{option_a}} <i class="fa fa-check-circle"></i>');
+        $(".b").css('opacity','0.5');
+      }
+      if(vote == "b"){
+        $(".b").prop('disabled', true);
+        $(".b").html('{{option_b}} <i class="fa fa-check-circle"></i>');
+        $(".a").css('opacity','0.5');
+      }
+    </script>
+    {% endif %}
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Loading...</title> <!-- Initial loading state -->
+    <base href="/index.html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="docker-compose, docker, stack">
+    <meta name="author" content="Tutum dev team">
+    <link rel='stylesheet' href="{{ url_for('static',filename='stylesheets/style.css') }}" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  </head>
+  <body>
+    <div id="content-container">
+      <div id="content-container-center">
+        <h3 id="event-title">Loading Events...</h3>
+        <form id="choice" name='form' method="POST" action="/">
+          <button id="a" type="submit" name="vote" class="a" value="a">Loading...</button>
+          <button id="b" type="submit" name="vote" class="b" value="b">Loading...</button>
+        </form>
+        <div id="tip">
+          (Tip: you can change your vote)
+        </div>
+        <div id="hostname">
+          Processed by container ID {{hostname}}
+        </div>
+      </div>
+      <!-- Section to display current events -->
+      
+    </div>
+    <section id="current-events">
+      <div class="container">
+        <h3>Current Events</h3>
+        <div id="event-list" class="event-list"></div>
+      </div>
+    </section>
+    <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <script>
+      // API endpoint and fetching events
+      const API_BASE_URL = 'https://data.brisbane.qld.gov.au/api/explore/v2.1/catalog/datasets/';
+      const datasetId = 'brisbane-city-council-events';
+      const eventTitle = document.getElementById('event-title');
+      const buttonA = document.getElementById('a');
+      const buttonB = document.getElementById('b');
+      const pageTitle = document.querySelector('title'); // For updating the <title>
+
+      async function fetchEvents() {
+        const apiUrl = `${API_BASE_URL}${datasetId}/records?limit=2&order_by=start_datetime`;
+        try {
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+
+          // Assuming the first two events are to be displayed
+          if (data.results && data.results.length >= 2) {
+            const event1 = data.results[0].subject || 'Event 1';
+            const event2 = data.results[1].subject || 'Event 2';
+
+            // Update the title and button text dynamically
+            eventTitle.textContent = `${event1} vs ${event2}!`;
+            buttonA.textContent = event1;
+            buttonB.textContent = event2;
+            pageTitle.textContent = `${event1} vs ${event2}!`; // Update the <title> element
+          } else {
+            eventTitle.textContent = 'No events found for voting!';
+          }
+        } catch (error) {
+          console.error('Error fetching events:', error);
+          eventTitle.textContent = 'Failed to load events.';
+        }
+      }
+
+      // Call the function to fetch and display events
+      fetchEvents();
+
+      // Function to display current events
+      function displayCurrentEvents(events) {
+        eventList.innerHTML = ''; // Clear any existing content
+
+        events.forEach(event => {
+          const eventElement = document.createElement('div');
+          eventElement.classList.add('event-item');
+          eventElement.innerHTML = `
+            <h4>${event.subject || 'Untitled Event'}</h4>
+            <p><strong>Location:</strong> ${event.location || 'TBA'}</p>
+            <p><strong>Date:</strong> ${event.formatteddatetime || 'N/A'}</p>
+          `;
+          eventList.appendChild(eventElement);
+        });
+      }
+    </script>
+
+    {% if vote %}
+    <script>
+      var vote = "{{vote}}";
+
+      if (vote == "a") {
+        $(".a").prop('disabled', true);
+        $(".a").html('{{option_a}} <i class="fa fa-check-circle"></i>');
+        $(".b").css('opacity', '0.5');
+      }
+      if (vote == "b") {
+        $(".b").prop('disabled', true);
+        $(".b").html('{{option_b}} <i class="fa fa-check-circle"></i>');
+        $(".a").css('opacity', '0.5');
+      }
+    </script>
+    {% endif %}
   </body>
 </html>
