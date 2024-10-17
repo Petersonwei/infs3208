@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{{option_a}} vs {{option_b}}!</title>
+    <base href="/index.html">
+    <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
+    <meta name="keywords" content="docker-compose, docker, stack">
+    <meta name="author" content="Tutum dev team">
+    <link rel='stylesheet' href="{{ url_for('static',filename='stylesheets/style.css') }}" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  </head>
+  <body>
+    <div id="content-container">
+      <div id="content-container-center">
+        <h3>Submit a Movie Review</h3>
+        <form id="review-form" method="POST" action="/">
+          <input type="text" name="movie_title" placeholder="Movie Title" required>
+          <input type="text" name="reviewer_name" placeholder="Your Name" required>
+          <textarea name="review_text" placeholder="Your Review" required></textarea>
+          <select name="rating" required>
+            <option value="">Select Rating</option>
+            <option value="1">1 Star</option>
+            <option value="2">2 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="5">5 Stars</option>
+          </select>
+          <button type="submit">Submit Review</button>
+        </form>
+        <div id="recent-reviews">
+          <!-- Display recent reviews here -->
+        </div>
+      </div>
+    </div>
+    <!-- ... scripts ... -->
+  </body>
+</html>
