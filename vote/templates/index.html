@@ -95,23 +95,27 @@
       const buttonA = document.getElementById('a');
       const buttonB = document.getElementById('b');
       const pageTitle = document.querySelector('title'); // For updating the <title>
-
+      const eventList = document.getElementById('event-list'); // Container for showing current events
+    
       async function fetchEvents() {
-        const apiUrl = `${API_BASE_URL}${datasetId}/records?limit=2&order_by=start_datetime`;
+        const apiUrl = `${API_BASE_URL}${datasetId}/records?limit=10&order_by=start_datetime`; // Fetch 10 events
         try {
           const response = await fetch(apiUrl);
           const data = await response.json();
-
-          // Assuming the first two events are to be displayed
+    
+          // Assuming the first two events are for voting
           if (data.results && data.results.length >= 2) {
             const event1 = data.results[0].subject || 'Event 1';
             const event2 = data.results[1].subject || 'Event 2';
-
+    
             // Update the title and button text dynamically
             eventTitle.textContent = `${event1} vs ${event2}!`;
             buttonA.textContent = event1;
             buttonB.textContent = event2;
             pageTitle.textContent = `${event1} vs ${event2}!`; // Update the <title> element
+    
+            // Display the list of events
+            displayCurrentEvents(data.results);
           } else {
             eventTitle.textContent = 'No events found for voting!';
           }
@@ -120,14 +124,14 @@
           eventTitle.textContent = 'Failed to load events.';
         }
       }
-
+    
       // Call the function to fetch and display events
       fetchEvents();
-
+    
       // Function to display current events
       function displayCurrentEvents(events) {
         eventList.innerHTML = ''; // Clear any existing content
-
+    
         events.forEach(event => {
           const eventElement = document.createElement('div');
           eventElement.classList.add('event-item');
@@ -140,6 +144,7 @@
         });
       }
     </script>
+    
 
     {% if vote %}
     <script>
